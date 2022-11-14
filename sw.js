@@ -16,6 +16,7 @@ self.addEventListener('install', function (event) {
         'https://introweb.tech/assets/json/4_50-indulgent-thanksgiving-side-dishes-for-any-holiday-gathering.json',
         'https://introweb.tech/assets/json/5_healthy-thanksgiving-recipe-crockpot-turkey-breast.json',
         'https://introweb.tech/assets/json/6_one-pot-thanksgiving-dinner.json']);
+      ]);
     })
   );
 });
@@ -34,29 +35,24 @@ self.addEventListener('fetch', function (event) {
   /*******************************/
   // This article from Google will help with this portion. Before asking ANY
   // questions about this section, read this article.
-  // NOTE: In the article's code REPLACE fetch(event.request.url) with
-  //       fetch(event.request)
   // https://developer.chrome.com/docs/workbox/caching-strategies-overview/
   /*******************************/
   // B7. TODO - Respond to the event by opening the cache using the name we gave
   //            above (CACHE_NAME)
-  if (event.request.destination === 'image') {
-    event.respondWith(caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(event.request).then((cachedResponse) => {
+  caches.open(CACHE_NAME).then(function (cache) {
+    return cache.match(event.request.url).then((cachedResponse) => {
+        // B8. TODO - If the request is in the cache, return with the cached version.
+        //            Otherwise fetch the resource, add it to the cache, and return
+        //            network response.
         if (cachedResponse) {
           return cachedResponse;
         }
-
+      
         return fetch(event.request).then((fetchedResponse) => {
           cache.put(event.request, fetchedResponse.clone());
           return fetchedResponse;
-        });
-      });
-    }));
-  } else {
-    return;
+        });  
+    });
   }
-  // B8. TODO - If the request is in the cache, return with the cached version.
-  //            Otherwise fetch the resource, add it to the cache, and return
-  //            network response.
+  
 });
